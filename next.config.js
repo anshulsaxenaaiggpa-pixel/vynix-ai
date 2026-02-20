@@ -1,7 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['vynix-cdn.yourdomain.com'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'pub-625ea53490d04dc1a859ce04261c2c47.r2.dev',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: '*.r2.dev',
+                pathname: '/**',
+            },
+        ],
         formats: ['image/avif', 'image/webp'],
     },
     async headers() {

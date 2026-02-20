@@ -18,7 +18,7 @@ interface User {
     plan: string;
 }
 
-type GenerationType = 'video' | 'music' | 'voiceover' | 'lipsync' | 'image' | 'voice' | 'song';
+type GenerationType = 'video' | 'music' | 'voiceover' | 'lipsync' | 'image' | 'voice' | 'song' | 'script';
 
 interface QuickAction {
     icon: string;
@@ -108,6 +108,7 @@ export default function DashboardPage() {
         { icon: '🎙️', title: 'Create Voice', type: 'voice', cost: 3 },
         { icon: '🎬', title: 'Generate Video', type: 'video', cost: 10 },
         { icon: '🗣️', title: 'Lip Sync', type: 'lipsync', cost: 8 },
+        { icon: '📝', title: 'Write Script', type: 'script', cost: 2 },
     ];
 
     return (

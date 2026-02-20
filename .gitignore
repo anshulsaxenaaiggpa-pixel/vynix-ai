@@ -27,6 +27,7 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local
@@ -40,3 +41,14 @@ next-env.d.ts
 
 # Backend (Deploy separately)
 /backend
+
+# Local deployment docs (contain secrets - keep local only)
+FINAL_ENV.md
+DEPLOY_HELP.md
+QUICK_START.md
+DEPLOYMENT.md
+LAUNCH_CHECKLIST.md
+RAILWAY_SETUP.md
+RESTART_FRONTEND.md
+DATABASE_SETUP.md
+

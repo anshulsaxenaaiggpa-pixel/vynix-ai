@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 interface GenerationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    type: 'video' | 'music' | 'voiceover' | 'lipsync' | 'image' | 'voice' | 'song';
+    type: 'video' | 'music' | 'voiceover' | 'lipsync' | 'image' | 'voice' | 'song' | 'script';
     cost: number;
     icon: string;
     title: string;
@@ -103,6 +103,39 @@ export function GenerationModal({ isOpen, onClose, type, cost, icon, title }: Ge
         }
     };
 
+    const handleGenerateScript = async () => {
+        if (!prompt.trim()) {
+            setError('Please enter a topic');
+            return;
+        }
+        setLoading(true);
+        setError('');
+        try {
+            const res = await fetch('/api/director/script', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    topic: prompt.trim(),
+                    style: settings.style || "cinematic",
+                    duration: settings.duration || 30
+                })
+            });
+            const data = await res.json();
+            if (data.script) {
+                setSettings({ ...settings, script: data.script });
+                setSuccess(true);
+            } else {
+                setError("Failed to generate script");
+            }
+        } catch (e: any) {
+            setError(e.message || "Error generating script");
+        } finally {
+            setLoading(false);
+            setSuccess(false); // Clear success after showing result
+        }
+    };
+
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="bg-vynix-dark border border-white/10 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
@@ -144,6 +177,39 @@ export function GenerationModal({ isOpen, onClose, type, cost, icon, title }: Ge
                             </select>
                         </div>
                     )}
+
+                    {type === 'script' && (
+                        <>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Style</label>
+                                    <select
+                                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-vynix-cyan outline-none"
+                                        onChange={(e) => setSettings({ ...settings, style: e.target.value })}
+                                        defaultValue="cinematic"
+                                    >
+                                        <option value="cinematic">Cinematic</option>
+                                        <option value="emotional">Emotional</option>
+                                        <option value="funny">Funny</option>
+                                        <option value="educational">Educational</option>
+                                        <option value="promotional">Promotional</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Duration (sec)</label>
+                                    <input
+                                        type="number"
+                                        min="15"
+                                        max="180"
+                                        defaultValue="30"
+                                        className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:border-vynix-cyan outline-none"
+                                        onChange={(e) => setSettings({ ...settings, duration: parseInt(e.target.value) })}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+
 
                     {type === 'voice' && (
                         <div>
@@ -298,7 +364,7 @@ export function GenerationModal({ isOpen, onClose, type, cost, icon, title }: Ge
                     <Button variant="ghost" onClick={onClose} disabled={loading || success} className="flex-1">
                         Cancel
                     </Button>
-                    <Button onClick={handleGenerate} disabled={loading || success || !prompt.trim()} className="flex-1">
+                    <Button onClick={type === 'script' ? handleGenerateScript : handleGenerate} disabled={loading || (type !== 'script' && success) || !prompt.trim()} className="flex-1">
                         {loading ? 'Generating...' : `Generate (${cost} credits)`}
                     </Button>
                 </div>
@@ -315,6 +381,7 @@ function getPlaceholder(type: string): string {
         voice: 'Hello, this is a test of the voice synthesis system...',
         lipsync: 'Describe the video and audio you want to sync...',
         image: 'A beautiful landscape with mountains and a lake at sunset...',
+        script: 'A sci-fi short film about time travel...',
     };
     return placeholders[type] || 'Describe what you want to create...';
 }

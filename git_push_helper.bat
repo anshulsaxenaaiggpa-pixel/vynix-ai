@@ -36,8 +36,8 @@ echo Renaming branch to main...
 git branch -M main
 
 echo.
-echo Pushing to GitHub...
-git push -u origin main
+echo Pushing to GitHub (Forcing new history)...
+git push -u origin main --force
 
 echo.
 echo ==========================================
